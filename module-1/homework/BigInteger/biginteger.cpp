@@ -129,18 +129,20 @@ BigInteger operator-(const BigInteger &x, const BigInteger &y) {
 }
 
 BigInteger operator*(const BigInteger &x, const BigInteger &y) {
-    BigInteger x_copy = x;
+    BigInteger product = x;
+    product.negative = x.negative != y.negative;
     BigInteger y_copy = y;
     y_copy--;
     while (y_copy > BigInteger(0)) {
-        x_copy += x;
+        product += x;
         --y_copy;
     }
-    return BigInteger(x.negative != y.negative, x_copy.value);
+    return product;
 }
 
 BigInteger operator/(const BigInteger &x, const BigInteger &y) {
     BigInteger quotient = 0;
+    quotient.negative = x.negative != y.negative;
     BigInteger x_copy = x;
     while (x_copy > y) {
         ++quotient;
