@@ -4,7 +4,7 @@
 
 
 namespace task {
-    
+
     class list {
 
     public:
