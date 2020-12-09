@@ -8,21 +8,21 @@ BigInteger::BigInteger(int value_) {
         result.push_back(value_ % BigInteger::BASIS);
         value_ /= BigInteger::BASIS;
     }
-    for (int i = static_cast<int>(result.size()) - 1; i >= 0; i--) {
-        value.push_back(result[i]);
+    for (std::size_t i = 1; i <= result.size(); i++) {
+        value.push_back(result[result.size() - i]);
     }
 }
 
-BigInteger::BigInteger(const BigInteger &copy) : value(copy.value), negative(copy.negative) {}
+BigInteger::BigInteger(const BigInteger& copy) : value(copy.value), negative(copy.negative) {}
 
-bool operator<(const BigInteger &x, const BigInteger &y) {
+bool operator<(const BigInteger& x, const BigInteger& y) {
     if (x.negative != y.negative) {
         return x.negative > y.negative;
     }
     if (x.value.size() != y.value.size()) {
         return x.value.size() < y.value.size();
     }
-    for (int i = 0; i < static_cast<int>(x.value.size()); i++) {
+    for (std::size_t i = 0; i < x.value.size(); i++) {
         if (x.value[i] != y.value[i]) {
             return x.value[i] < y.value[i];
         }
@@ -30,11 +30,11 @@ bool operator<(const BigInteger &x, const BigInteger &y) {
     return false;
 }
 
-bool operator==(const BigInteger &x, const BigInteger &y) {
+bool operator==(const BigInteger& x, const BigInteger& y) {
     if (x.value.size() != y.value.size() || x.negative != y.negative) {
         return false;
     }
-    for (int i = 0; i < static_cast<int>(x.value.size()); i++) {
+    for (std::size_t i = 0; i < x.value.size(); i++) {
         if (x.value[i] != y.value[i]) {
             return false;
         }
@@ -42,19 +42,19 @@ bool operator==(const BigInteger &x, const BigInteger &y) {
     return true;
 }
 
-bool operator>(const BigInteger &x, const BigInteger &y) {
+bool operator>(const BigInteger& x, const BigInteger& y) {
     return !(x < y || x == y);
 }
 
-bool operator!=(const BigInteger &x, const BigInteger &y) {
+bool operator!=(const BigInteger& x, const BigInteger& y) {
     return !(x == y);
 }
 
-bool operator<=(const BigInteger &x, const BigInteger &y) {
+bool operator<=(const BigInteger& x, const BigInteger& y) {
     return x < y || x == y;
 }
 
-bool operator>=(const BigInteger &x, const BigInteger &y) {
+bool operator>=(const BigInteger& x, const BigInteger& y) {
     return x > y || x == y;
 }
 
@@ -68,7 +68,7 @@ BigInteger BigInteger::operator-() const {
     return result;
 }
 
-BigInteger operator+(const BigInteger &x, const BigInteger &y) {
+BigInteger operator+(const BigInteger& x, const BigInteger& y) {
     if (x.negative != y.negative) {
         return x.negative ? y - (-x) : x - (-y);
     }
@@ -98,7 +98,7 @@ BigInteger operator+(const BigInteger &x, const BigInteger &y) {
     return BigInteger(x.negative, BigInteger::reverse(sum));
 }
 
-BigInteger operator-(const BigInteger &x, const BigInteger &y) {
+BigInteger operator-(const BigInteger& x, const BigInteger& y) {
     if (x.negative != y.negative) {
         return x.negative ? -(-x + y) : x + (-y);
     }
@@ -128,7 +128,7 @@ BigInteger operator-(const BigInteger &x, const BigInteger &y) {
     return BigInteger(x.negative, BigInteger::remove_lead_zeros(x_value));
 }
 
-BigInteger operator*(const BigInteger &x, const BigInteger &y) {
+BigInteger operator*(const BigInteger& x, const BigInteger& y) {
     BigInteger product = x;
     product.negative = x.negative != y.negative;
     BigInteger y_copy = y;
@@ -140,7 +140,7 @@ BigInteger operator*(const BigInteger &x, const BigInteger &y) {
     return product;
 }
 
-BigInteger operator/(const BigInteger &x, const BigInteger &y) {
+BigInteger operator/(const BigInteger& x, const BigInteger& y) {
     BigInteger quotient = 0;
     quotient.negative = x.negative != y.negative;
     BigInteger x_copy = x;
@@ -151,7 +151,7 @@ BigInteger operator/(const BigInteger &x, const BigInteger &y) {
     return quotient;
 }
 
-BigInteger operator%(const BigInteger &x, const BigInteger &y) {
+BigInteger operator%(const BigInteger& x, const BigInteger& y) {
     if (x.negative) {
         return -((-x) % y);
     }
@@ -164,7 +164,7 @@ const BigInteger BigInteger::operator++(int) {
     return result;
 }
 
-BigInteger &BigInteger::operator++() {
+BigInteger& BigInteger::operator++() {
     *this += 1;
     return *this;
 }
@@ -175,67 +175,67 @@ const BigInteger BigInteger::operator--(int) {
     return result;
 }
 
-BigInteger &BigInteger::operator--() {
+BigInteger& BigInteger::operator--() {
     *this -= 1;
     return *this;
 }
 
-BigInteger &BigInteger::operator+=(const BigInteger &x) {
+BigInteger& BigInteger::operator+=(const BigInteger& x) {
     *this = *this + x;
     return *this;
 }
 
-BigInteger &BigInteger::operator-=(const BigInteger &x) {
+BigInteger& BigInteger::operator-=(const BigInteger& x) {
     *this = *this - x;
     return *this;
 }
 
-BigInteger &BigInteger::operator*=(const BigInteger &x) {
+BigInteger& BigInteger::operator*=(const BigInteger& x) {
     *this = *this * x;
     return *this;
 }
 
-BigInteger &BigInteger::operator/=(const BigInteger &x) {
+BigInteger& BigInteger::operator/=(const BigInteger& x) {
     *this = *this / x;
     return *this;
 }
 
-BigInteger &BigInteger::operator%=(const BigInteger &x) {
+BigInteger& BigInteger::operator%=(const BigInteger& x) {
     *this = *this % x;
     return *this;
 }
 
-std::vector<int> BigInteger::reverse(std::vector<int> &v) {
+std::vector<int> BigInteger::reverse(std::vector<int>& v) {
     std::vector<int> result;
     bool leading_zeros = v[v.size() - 1] == 0;
-    for (int i = static_cast<int>(v.size()) - 1; i >= 0; i--) {
-        while (leading_zeros && v[i] == 0) {
-            i--;
+    for (int i = 1; i <= v.size(); i++) {
+        while (leading_zeros && v[v.size() - i] == 0) {
+            i++;
         }
         leading_zeros = false;
-        result.push_back(v[i]);
+        result.push_back(v[v.size() - i]);
     }
     return result;
 }
 
-std::vector<int> BigInteger::remove_lead_zeros(std::vector<int> &x) {
+std::vector<int> BigInteger::remove_lead_zeros(std::vector<int>& x) {
     std::vector<int> result;
-    int i = 0;
-    while (x[i] == 0) {
-        i++;
+    int non_zero_pos = 0;
+    while (x[non_zero_pos] == 0) {
+        non_zero_pos++;
     }
-    for (i = i; i < static_cast<int>(x.size()); i++) {
+    for (std::size_t i = non_zero_pos; i < x.size(); i++) {
         result.push_back(x[i]);
     }
     return result;
 }
 
-std::ostream &operator<<(std::ostream &out, const BigInteger &x) {
+std::ostream& operator<<(std::ostream& out, const BigInteger& x) {
     out << x.toString();
     return out;
 }
 
-std::istream &operator>>(std::istream &in, BigInteger &x) {
+std::istream& operator>>(std::istream& in, BigInteger& x) {
     std::string value;
     in >> value;
     x = BigInteger(value);
