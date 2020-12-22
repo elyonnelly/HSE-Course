@@ -26,24 +26,6 @@ public:
 protected:
     std::vector<Point> points;
 
-    void place_points_clockwise();
-
-    struct Comparator {
-        Point start;
-        explicit Comparator(Point point_) : start(point_){}
-        inline bool operator()(const Point& p1, const Point& p2) {
-            double cotan1 = -(p1.x - start.x)/(p1.y - start.y);
-            double cotan2 = -(p2.x - start.x)/(p2.y - start.y);
-            if (cotan1 != cotan2) {
-                return cotan1 - cotan2 < 0;
-            }
-            return p1 < p2;
-        }
-    };
-
-private:
-    double INF = -1e8;
-
 private:
     size_t find_shift(const Polygon& another_polygon) const;
 };

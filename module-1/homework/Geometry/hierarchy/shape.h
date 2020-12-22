@@ -22,9 +22,6 @@ public:
     static Point scalePoint(const Point& point, const Point& center, double scale);
     static Point centerOfSegment(const Point& p1, const Point& p2);
 
-    constexpr static const double ROUND_POW = 1;
-    constexpr static const double EPS = 1000000;
-    constexpr static const double PI = 3.1415926;
 };
 
 #endif

@@ -1,12 +1,10 @@
 #include <utility>
-#include <algorithm>
 #include <cmath>
 #include "polygon.h"
 #include "ellipse.h"
+#include "Constants.h"
 
-Polygon::Polygon(std::vector<Point> points_) : points(std::move(points_)) {
-    place_points_clockwise();
-}
+Polygon::Polygon(std::vector<Point> points_) : points(std::move(points_)) {}
 
 int Polygon::verticesCount() const {
     return points.size();
@@ -146,27 +144,26 @@ bool Polygon::containsPoint(const Point& point) const {
         return false;
     }
 
-    double angleSum = 0;
+    double angle_sum = 0;
     for (size_t i = 0; i < points.size(); i++) {
         Vector p1P = Vector(points[i], point);
         Vector p2P = Vector(points[(i + 1) % points.size()], point);
         if ((p1P^p2P) == 0 || p1P*p2P <= 0) {
             return true;
         } else {
-            angleSum += std::atan2((p1P^p2P), p1P*p2P);
+            angle_sum += std::atan2((p1P ^ p2P), p1P * p2P);
         }
     }
-    return angleSum - 2 * Shape::PI == 0;
+    return angle_sum - 2 * Constants::PI == 0;
 }
 
 void Polygon::rotate(const Point& center, double angle) {
-    double rad_angle = angle * Shape::PI / 180;
+    double rad_angle = angle * Constants::PI / 180;
     std::vector<Point> new_points;
     for (auto point : points) {
         new_points.push_back(Shape::rotatePoint(point, center, rad_angle));
     }
     points = new_points;
-    place_points_clockwise();
 }
 
 void Polygon::reflex(const Point& center) {
@@ -175,7 +172,6 @@ void Polygon::reflex(const Point& center) {
         new_points.push_back(Shape::reflectPoint(point, center));
     }
     points = new_points;
-    place_points_clockwise();
 }
 
 void Polygon::reflex(const Line& axis) {
@@ -184,7 +180,6 @@ void Polygon::reflex(const Line& axis) {
         new_points.push_back(Shape::reflectPoint(point, axis));
     }
     points = new_points;
-    place_points_clockwise();
 }
 
 void Polygon::scale(const Point& center, double scale) {
@@ -193,12 +188,5 @@ void Polygon::scale(const Point& center, double scale) {
         new_points.push_back(Shape::scalePoint(point, center, scale));
     }
     points = new_points;
-    place_points_clockwise();
-}
-
-void Polygon::place_points_clockwise() {
-    //Point start = Point(-INF, -INF);
-    //sort by polar angle, placing points clockwise
-    //std::sort(points.begin(), points.end(), Comparator(start));
 }
 

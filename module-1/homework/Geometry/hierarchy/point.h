@@ -12,8 +12,6 @@ struct Point {
     friend bool operator<(const Point &p1, const Point &p2);
 
     static double dist(const Point& p1, const Point& p2);
-
-    Point roundCoordinates();
 };
 
 #endif

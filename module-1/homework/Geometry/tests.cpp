@@ -172,6 +172,8 @@ TEST(Transformations, Test1) {
     Polygon expected(vec);
 
     ASSERT_TRUE(actual == expected);
+    double p1 = actual.area();
+    double p2 = expected.area();
     ASSERT_NEAR(actual.perimeter(), expected.perimeter(),1e-6);
     ASSERT_NEAR(actual.area(), expected.area(),1e-6);
 }

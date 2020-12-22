@@ -1,12 +1,11 @@
 
 #include "shape.h"
-#include <utility>
 #include <cmath>
 
 Point Shape::rotatePoint(const Point& point, const Point& center, double angle) {
     Vector CP = Vector(center, point);
     Vector rotated_CP = CP.getRotatedVector(angle);
-    return (center + rotated_CP).roundCoordinates();
+    return center + rotated_CP;
 }
 
 Point Shape::reflectPoint(const Point& point, const Line& axis) {
@@ -23,18 +22,18 @@ Point Shape::reflectPoint(const Point& point, const Line& axis) {
     } else {
         new_point = point - perpendicular * 2;
     }
-    return new_point.roundCoordinates();
+    return new_point;
 }
 
 Point Shape::reflectPoint(const Point& point, const Point& center) {
     Vector transfer_vector(point, center);
     transfer_vector = transfer_vector * 2;
-    return (point + transfer_vector).roundCoordinates();
+    return point + transfer_vector;
 }
 
 Point Shape::scalePoint(const Point& point, const Point& center, double scale) {
     Vector scaleVector = Vector(center, point) * scale;
-    return (center + scaleVector).roundCoordinates();
+    return center + scaleVector;
 }
 
 Point Shape::centerOfSegment(const Point& p1, const Point& p2) {

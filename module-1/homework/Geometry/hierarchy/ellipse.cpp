@@ -1,5 +1,6 @@
 
 #include "ellipse.h"
+#include "Constants.h"
 #include <cmath>
 
 Ellipse::Ellipse(const Point& f1, const Point& f2, double d) {
@@ -42,12 +43,12 @@ double Ellipse::perimeter() const {
     double semi_major_axis = getSemiMajorAxis();
     double semi_minor_axis = getSemiMinorAxis();
 
-    return 4 * (Shape::PI * semi_minor_axis * semi_major_axis + (semi_major_axis - semi_minor_axis))
+    return 4 * (Constants::PI * semi_minor_axis * semi_major_axis + (semi_major_axis - semi_minor_axis))
                 / (semi_major_axis + semi_minor_axis);
 }
 
 double Ellipse::area() const {
-    return Shape::PI * getSemiMinorAxis() * getSemiMajorAxis();
+    return Constants::PI * getSemiMinorAxis() * getSemiMajorAxis();
 }
 
 bool Ellipse::operator==(const Shape& another) const {

@@ -1,5 +1,6 @@
 #include "rectangle.h"
 #include "ellipse.h"
+#include "Constants.h"
 #include <cmath>
 
 Rectangle::Rectangle(const Point& p1, const Point& p2, double ratio) : Polygon() {
@@ -12,9 +13,8 @@ Rectangle::Rectangle(const Point& p1, const Point& p2, double ratio) : Polygon()
     double BO = Point::dist(p1, center);
     double alpha = std::acos(1 - (std::pow(AB, 2) / (2 * std::pow(BO, 2))));
     Point A = Shape::rotatePoint(B, center, alpha);
-    Point C = Shape::rotatePoint(B, center, -(Shape::PI - alpha));
+    Point C = Shape::rotatePoint(B, center, -(Constants::PI - alpha));
     points = {A, B, C, D};
-    place_points_clockwise();
 }
 
 Point Rectangle::center() {
