@@ -1,3 +1,6 @@
+#ifndef GEOMETRY_VECTOR_H_
+#define GEOMETRY_VECTOR_H_
+
 #include "point.h"
 
 struct Vector {
@@ -16,6 +19,10 @@ struct Vector {
     friend Point operator-(const Point& point, const Vector& vector);
     //pseudoscalar product
     friend double operator^(const Vector& v1, const Vector& v2);
+    //scalar product
+    friend double operator*(const Vector& v1, const Vector& v2);
 
     Vector getRotatedVector(double angle);
 };
+
+#endif

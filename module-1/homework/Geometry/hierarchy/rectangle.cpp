@@ -1,31 +1,24 @@
 #include "rectangle.h"
+#include "ellipse.h"
 #include <cmath>
 
-Rectangle::Rectangle(const Point& p1, const Point& p2, double ratio) {
-    Point center = Point((p1.x + p2.x) / 2, (p1.y + p2.y) / 2);
-    double diagonal_length = Point::dist(p1, p2);
-    //известно что a^2 + b^2 = diagonal_length^2
-    //также известно, если а это меньшая сторона, то a = b * ratio (<= ratio = a/b)
-    //тогда (b*ratio)^2 + b^2 = diag_lenth^2
-    //b^2*ratio^2+b^2=diag^2
-    //b^2(ratio^2+1)=diag^2
-    //b^2=diag^2/(ratio^2+1)
-    //B _____ C
-    // |  .  |
-    //A|_____|D
+Rectangle::Rectangle(const Point& p1, const Point& p2, double ratio) : Polygon() {
+    //p1 как бы B, p2 как бы D
+    Point B = p1, D = p2;
+    Point center = Shape::centerOfSegment(B, D);
+    double diagonal_length = Point::dist(B, D);
     double BC = sqrt(diagonal_length * diagonal_length / (ratio * ratio + 1));
     double AB = BC * ratio;
-    //кажется будто не так все же вычисление проходит.
-    // потому что может быть слегка повернут прямоугольник.
-    Point A = Point(center.x - BC / 2, center.y - AB / 2);
-    Point B = Point(center.x - BC / 2, center.y + AB / 2);
-    Point C = Point(center.x + BC / 2, center.y + AB / 2);
-    Point D = Point(center.x + BC / 2, center.y - AB / 2);
+    double BO = Point::dist(p1, center);
+    double alpha = std::acos(1 - (std::pow(AB, 2) / (2 * std::pow(BO, 2))));
+    Point A = Shape::rotatePoint(B, center, alpha);
+    Point C = Shape::rotatePoint(B, center, -(Shape::PI - alpha));
     points = {A, B, C, D};
+    place_points_clockwise();
 }
 
 Point Rectangle::center() {
-    return Point((points[0].x + points[2].x) / 2, (points[0].y + points[2].y) / 2);
+    return Shape::centerOfSegment(points[0], points[2]);
 }
 
 std::pair<Line, Line> Rectangle::diagonals() {

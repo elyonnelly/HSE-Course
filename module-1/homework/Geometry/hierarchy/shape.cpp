@@ -6,7 +6,7 @@
 Point Shape::rotatePoint(const Point& point, const Point& center, double angle) {
     Vector CP = Vector(center, point);
     Vector rotated_CP = CP.getRotatedVector(angle);
-    return point + rotated_CP;
+    return (center + rotated_CP).roundCoordinates();
 }
 
 Point Shape::reflectPoint(const Point& point, const Line& axis) {
@@ -23,11 +23,20 @@ Point Shape::reflectPoint(const Point& point, const Line& axis) {
     } else {
         new_point = point - perpendicular * 2;
     }
-    return new_point;
+    return new_point.roundCoordinates();
 }
 
 Point Shape::reflectPoint(const Point& point, const Point& center) {
     Vector transfer_vector(point, center);
     transfer_vector = transfer_vector * 2;
-    return point + transfer_vector;
+    return (point + transfer_vector).roundCoordinates();
+}
+
+Point Shape::scalePoint(const Point& point, const Point& center, double scale) {
+    Vector scaleVector = Vector(center, point) * scale;
+    return (center + scaleVector).roundCoordinates();
+}
+
+Point Shape::centerOfSegment(const Point& p1, const Point& p2) {
+    return {(p1.x + p2.x) / 2, (p1.y + p2.y) / 2};
 }

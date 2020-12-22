@@ -1,3 +1,6 @@
+#ifndef GEOMETRY_LINE_H_
+#define GEOMETRY_LINE_H_
+
 #include "vector.h"
 
 class Line {
@@ -15,3 +18,5 @@ private:
     Point p1;
     Point p2;
 };
+
+#endif //GEOMETRY_LINE_H

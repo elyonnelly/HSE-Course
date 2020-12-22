@@ -1,12 +1,12 @@
+#ifndef GEOMETRY_ELLIPSE_H
+#define GEOMETRY_ELLIPSE_H
+
 #include "ellipse.h"
 
 class Circle : public Ellipse {
 public:
     Circle(const Point& center_, double mRadius);
-
     double radius();
-
-private:
-    Point center;
-    double radius_;
 };
+
+#endif //GEOMETRY_ELLIPSE_H

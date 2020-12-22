@@ -2,9 +2,7 @@
 #include "circle.h"
 
 double Circle::radius() {
-    return radius_;
+    return dist;
 }
 
-Circle::Circle(const Point& center_, double mRadius) {
-
-}
+Circle::Circle(const Point& center_, double mRadius) : Ellipse(center_, center_, mRadius) { }

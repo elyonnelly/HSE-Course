@@ -1,3 +1,6 @@
+#ifndef GEOMETRY_SQUARE_H_
+#define GEOMETRY_SQUARE_H_
+
 #include "rectangle.h"
 #include "circle.h"
 
@@ -7,3 +10,5 @@ public:
     Circle circumscribedCircle();
     Circle inscribedCircle();
 };
+
+#endif //GEOMETRY_SQUARE_H_

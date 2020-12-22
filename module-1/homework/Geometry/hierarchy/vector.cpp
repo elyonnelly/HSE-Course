@@ -1,8 +1,13 @@
 #include "vector.h"
+#include "shape.h"
 #include <cmath>
 
 double operator^(const Vector& v1, const Vector& v2) {
     return v1.x * v2.y - v1.y * v2.x;
+}
+
+double operator*(const Vector& v1, const Vector& v2) {
+    return v1.x * v2.x + v1.y * v2.y;
 }
 
 Vector::Vector(double x_, double y_) : x(x_), y(y_) {}
@@ -44,5 +49,6 @@ void Vector::normalize() {
 }
 
 Vector Vector::getRotatedVector(double angle) {
-    return {x * std::cos(angle) - y * std::sin(angle), y * std::cos(angle) + x * std::sin(angle)};
+    return {std::round((x * std::cos(angle) - y * std::sin(angle)) * Shape::ROUND_POW) / Shape::ROUND_POW,
+            std::round((y * std::cos(angle) + x * std::sin(angle)) * Shape::ROUND_POW) / Shape::ROUND_POW};
 }

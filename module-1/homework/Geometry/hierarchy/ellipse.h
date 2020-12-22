@@ -1,3 +1,6 @@
+#ifndef GEOMETRY_ELLIPSE_H_
+#define GEOMETRY_ELLIPSE_H_
+
 #include <utility>
 #include "shape.h"
 
@@ -23,10 +26,13 @@ public:
 private:
     Point focus1;
     Point focus2;
-    double dist;
-    const double PI = 3.1415926;
 
     double getSemiMajorAxis() const;
     double getSemiMinorAxis() const;
     double getSemiFocalDistance() const;
+
+protected:
+    double dist;
 };
+
+#endif //GEOMETRY_ELLIPSE_H_

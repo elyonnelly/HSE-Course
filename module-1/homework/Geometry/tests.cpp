@@ -138,6 +138,9 @@ TEST(Area, TrianglePolygons) {
 
     std::vector<Point> vec = {a, b, d, c};
     Polygon poly(vec);
+    double pa = poly.area();
+    double t1 = triangle1.area();
+    double t2 = triangle2.area();
     
     ASSERT_NEAR(poly.area(), triangle1.area() + triangle2.area(),1e-6);
 }
@@ -200,6 +203,8 @@ TEST(Rectangle, Test1) {
     
     Rectangle rectangle(a, b, ratio);
     Triangle triangle(a, b, c);
+    double ra = rectangle.area();
+    double ta = triangle.area();
     ASSERT_NEAR(rectangle.area(), 2 * triangle.area(), 1e-6);
 }
 

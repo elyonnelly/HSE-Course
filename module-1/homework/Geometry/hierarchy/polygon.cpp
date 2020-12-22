@@ -1,7 +1,8 @@
 #include <utility>
-#include<vector>
 #include <algorithm>
+#include <cmath>
 #include "polygon.h"
+#include "ellipse.h"
 
 Polygon::Polygon(std::vector<Point> points_) : points(std::move(points_)) {
     place_points_clockwise();
@@ -56,7 +57,19 @@ double Polygon::area() const {
         p_area -= points[i + 1].x * points[i].y;
     }
     p_area -= points[0].x * points[points.size() - 1].y;
-    return p_area * 0.5;
+    return std::abs(p_area * 0.5);
+}
+
+size_t Polygon::find_shift(const Polygon& another_polygon) const {
+    Point start_point = another_polygon.getVertices()[0];
+    size_t start_index = -1;
+    for (size_t i = 0; i < points.size(); i++) {
+        if (points[i] == start_point) {
+            start_index = i;
+            break;
+        }
+    }
+    return start_index;
 }
 
 bool Polygon::operator==(const Shape& another) const {
@@ -67,8 +80,12 @@ bool Polygon::operator==(const Shape& another) const {
     if (another_polygon->verticesCount() != verticesCount()) {
         return false;
     }
+    size_t index = find_shift(*another_polygon);
+    if (index == -1) {
+        return false;
+    }
     for (size_t i = 0; i < points.size(); i++) {
-        if (another_polygon->getVertices()[i] != points[i]) {
+        if (another_polygon->getVertices()[i] != points[(index++) % points.size()]) {
             return false;
         }
     }
@@ -83,13 +100,18 @@ bool Polygon::isCongruentTo(const Shape& another) const {
     if (another_polygon->verticesCount() != verticesCount()) {
         return false;
     }
+    size_t index = find_shift(*another_polygon);
+    if (index == -1) {
+        return false;
+    }
     for (size_t i = 0; i < points.size(); i++) {
-        double this_dist = Point::dist(points[i], points[(i + 1) % points.size()]);
+        double this_dist = Point::dist(points[index], points[(index + 1) % points.size()]);
         double another_dist = Point::dist(another_polygon->getVertices()[i],
                 another_polygon->getVertices()[(i + 1) % points.size()]);
         if (this_dist != another_dist) {
             return false;
         }
+        index = (index + 1) % points.size();
     }
     return true;
 }
@@ -123,34 +145,34 @@ bool Polygon::containsPoint(const Point& point) const {
     if (points.size() < 3) {
         return false;
     }
-    std::vector<Point> points_copy = points;
-    points_copy.push_back(points_copy[0]);
-    Point p1 = points_copy[0], p2 = points_copy[1];
-    Vector p1p2(p1, p2), p1P(p1, point);
-    bool product_sign = (p1p2 ^ p1P) > 0;
-    for (size_t i = 2; i < points_copy.size(); i++) {
-        p1 = p2;
-        p2 = points_copy[i];
-        p1p2 = Vector(p1, p2), p1P = Vector(p1, point);
-        double product = p1p2 ^p1P;
-        if ((product > 0) != product_sign) {
-            return false;
+
+    double angleSum = 0;
+    for (size_t i = 0; i < points.size(); i++) {
+        Vector p1P = Vector(points[i], point);
+        Vector p2P = Vector(points[(i + 1) % points.size()], point);
+        if ((p1P^p2P) == 0 || p1P*p2P <= 0) {
+            return true;
+        } else {
+            angleSum += std::atan2((p1P^p2P), p1P*p2P);
         }
     }
-    return true;
+    return angleSum - 2 * Shape::PI == 0;
 }
 
 void Polygon::rotate(const Point& center, double angle) {
-
+    double rad_angle = angle * Shape::PI / 180;
+    std::vector<Point> new_points;
+    for (auto point : points) {
+        new_points.push_back(Shape::rotatePoint(point, center, rad_angle));
+    }
+    points = new_points;
+    place_points_clockwise();
 }
 
 void Polygon::reflex(const Point& center) {
     std::vector<Point> new_points;
     for (auto point : points) {
-        Vector transfer_vector(point, center);
-        transfer_vector = transfer_vector * 2;
-        Point new_point = point + transfer_vector;
-        new_points.push_back(new_point);
+        new_points.push_back(Shape::reflectPoint(point, center));
     }
     points = new_points;
     place_points_clockwise();
@@ -159,33 +181,24 @@ void Polygon::reflex(const Point& center) {
 void Polygon::reflex(const Line& axis) {
     std::vector<Point> new_points;
     for (auto point : points) {
-        Vector direction_vector = axis.getDirectionVector();
-        Vector perpendicular = direction_vector.getNormal();
-        Vector AP = Vector(axis.getP1(), point);
-        Vector AB = Vector(axis.getP1(), axis.getP2());
-        double h = std::abs(AP ^ AB) / AB.getLength();
-        perpendicular.normalize();
-        perpendicular = perpendicular * h;
-        Point new_point;
-        if ((AP ^ AB) > 0) {
-            new_point = point + perpendicular * 2;
-        } else {
-            new_point = point - perpendicular * 2;
-        }
-        new_points.push_back(new_point);
+        new_points.push_back(Shape::reflectPoint(point, axis));
     }
     points = new_points;
     place_points_clockwise();
 }
 
 void Polygon::scale(const Point& center, double scale) {
-
+    std::vector<Point> new_points;
+    for (auto point : points) {
+        new_points.push_back(Shape::scalePoint(point, center, scale));
+    }
+    points = new_points;
+    place_points_clockwise();
 }
 
 void Polygon::place_points_clockwise() {
-    std::sort(points.begin(), points.end());
-    Point start = points[0];
+    //Point start = Point(-INF, -INF);
     //sort by polar angle, placing points clockwise
-    std::sort(++points.begin(), points.end(), Comparator(start));
+    //std::sort(points.begin(), points.end(), Comparator(start));
 }
 

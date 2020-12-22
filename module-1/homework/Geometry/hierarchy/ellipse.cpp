@@ -35,19 +35,19 @@ double Ellipse::eccentricity() const {
 }
 
 Point Ellipse::center() const {
-    return {(focus1.x + focus2.x) / 2, (focus1.y + focus2.y) / 2};
+    return Shape::centerOfSegment(focus1, focus2);
 }
 
 double Ellipse::perimeter() const {
     double semi_major_axis = getSemiMajorAxis();
     double semi_minor_axis = getSemiMinorAxis();
 
-    return 4 * (Ellipse::PI * semi_minor_axis * semi_major_axis + (semi_major_axis - semi_minor_axis))
+    return 4 * (Shape::PI * semi_minor_axis * semi_major_axis + (semi_major_axis - semi_minor_axis))
                 / (semi_major_axis + semi_minor_axis);
 }
 
 double Ellipse::area() const {
-    return Ellipse::PI * getSemiMinorAxis() * getSemiMajorAxis();
+    return Shape::PI * getSemiMinorAxis() * getSemiMajorAxis();
 }
 
 bool Ellipse::operator==(const Shape& another) const {
@@ -85,23 +85,26 @@ bool Ellipse::containsPoint(const Point& point) const {
 }
 
 void Ellipse::rotate(const Point& center, double angle) {
-    Vector CF1 = Vector(center, focus1), CF2 = Vector(center, focus2);
-    Vector rotated_CF1 = CF1.getRotatedVector(angle);
-    Vector rotated_CF2 = CF2.getRotatedVector(angle);
-    focus1 = focus1 + rotated_CF1;
-    focus2 = focus2 + rotated_CF2;
+    focus1 = Shape::rotatePoint(focus1, center, angle);
+    focus2 = Shape::rotatePoint(focus2, center, angle);
 }
 
 void Ellipse::reflex(const Point& center) {
-
+    focus1 = Shape::reflectPoint(focus1, center);
+    focus2 = Shape::reflectPoint(focus2, center);
 }
 
 void Ellipse::reflex(const Line& axis) {
-
+    focus1 = Shape::reflectPoint(focus1, axis);
+    focus2 = Shape::reflectPoint(focus2, axis);
 }
 
 void Ellipse::scale(const Point& center, double scale) {
-
+    Point point_on_ellipse = this->center() + Vector(0, getSemiMajorAxis());
+    Point scaled_point = Shape::scalePoint(point_on_ellipse, center, scale);
+    focus1 = Shape::scalePoint(focus1, center, scale);
+    focus2 = Shape::scalePoint(focus2, center, scale);
+    dist = Point::dist(focus1, scaled_point) + Point::dist(focus2, scaled_point);
 }
 
 double Ellipse::getSemiMajorAxis() const {
@@ -111,7 +114,7 @@ double Ellipse::getSemiMajorAxis() const {
 double Ellipse::getSemiMinorAxis() const {
     double focal_distance = getSemiFocalDistance();
     double semi_major_axis = getSemiMajorAxis();
-    return std::sqrt(std::pow(semi_major_axis, 2) - std::sqrt(std::pow(focal_distance, 2)));
+    return std::sqrt(std::pow(semi_major_axis, 2) - std::pow(focal_distance, 2));
 }
 
 double Ellipse::getSemiFocalDistance() const {
