@@ -4,13 +4,8 @@
 #include <cmath>
 
 Ellipse::Ellipse(const Point& f1, const Point& f2, double d) {
-    if (f1 < f2) {
-        focus1 = f1;
-        focus2 = f2;
-    } else {
-        focus1 = f2;
-        focus2 = f1;
-    }
+    focus1 = (f1 < f2) ? f1 : f2;
+    focus2 = (f1 < f2) ? f2 : f1;
     dist = d;
 }
 

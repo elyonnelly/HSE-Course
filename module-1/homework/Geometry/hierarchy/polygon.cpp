@@ -19,7 +19,9 @@ bool Polygon::isConvex() const {
         return false;
     }
     std::vector<Point> points_copy = points;
-    Point p1 = points_copy[0], p2 = points_copy[1], p3 = points_copy[2];
+    Point p1 = points_copy[0];
+    Point p2 = points_copy[1];
+    Point p3 = points_copy[2];
     points_copy.push_back(points_copy[0]);
     Vector p1p2(p1, p2), p1p3(p1, p3);
     bool product_sign = (p1p2 ^ p1p3) > 0;

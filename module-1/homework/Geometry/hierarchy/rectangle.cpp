@@ -4,7 +4,6 @@
 #include <cmath>
 
 Rectangle::Rectangle(const Point& p1, const Point& p2, double ratio) : Polygon() {
-    //p1 как бы B, p2 как бы D
     Point B = p1, D = p2;
     Point center = Shape::centerOfSegment(B, D);
     double diagonal_length = Point::dist(B, D);
