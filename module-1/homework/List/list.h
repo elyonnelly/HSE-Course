@@ -1,51 +1,74 @@
 #pragma once
+
 #include <cstddef>
 
 
 namespace task {
 
+    class list {
 
-class list {
+    public:
 
-public:
+        list();
 
-    list();
-    list(size_t count, const int& value = int());
+        list(size_t count, const int &value = int());
 
-    ~list();
-    list& operator=(const list& other);
+        list(const task::list &other);
 
+        ~list();
 
-    int& front();
-    const int& front() const;
-
-    int& back();
-    const int& back() const;
+        list &operator=(const list &other);
 
 
-    bool empty() const;
-    size_t size() const;
-    void clear();
+        int &front();
+
+        const int &front() const;
+
+        int &back();
+
+        const int &back() const;
 
 
-    void push_back(const int& value);
-    void pop_back();
-    void push_front(const int& value);
-    void pop_front();
-    void resize(size_t count);
-    void swap(list& other);
+        bool empty() const;
+
+        size_t size() const;
+
+        void clear();
 
 
-    void remove(const int& value);
-    void unique();
-    void sort();
+        void push_back(const int &value);
 
-    // Your code goes here?..
+        void pop_back();
 
-private:
+        void push_front(const int &value);
 
-    // Your code goes here...
+        void pop_front();
 
-};
+        void resize(size_t count);
 
-}  // namespace task
+        void swap(list &other);
+
+        void remove(const int &value);
+
+        void unique();
+
+        void sort();
+
+    private:
+
+        struct Node {
+            int value;
+            Node *prev = nullptr;
+            Node *next = nullptr;
+
+            explicit Node(int value_, Node *prev_, Node *next_) : value(value_), prev(prev_), next(next_) {}
+        };
+
+        Node *head;
+        Node *tail;
+        size_t list_size;
+
+        void remove_node(Node *node);
+    };
+
+}
