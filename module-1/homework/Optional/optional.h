@@ -10,13 +10,13 @@ struct NullOpt {
     }
 };
 
-constexpr NullOpt kNullOpt = NullOpt(0);
+constexpr NullOpt kNullOpt = NullOpt{0};
 
 struct InPlace {
     explicit InPlace() = default;
 };
 
-constexpr InPlace kInPlace = InPlace();
+constexpr InPlace kInPlace = InPlace{};
 
 template <typename T, bool = std::is_trivially_destructible_v<T>>
 class OptionalDestructBase;
@@ -34,11 +34,11 @@ public:
 
     template <typename... Args>
     constexpr OptionalDestructBase(InPlace, Args&&... args)
-        : value_(std::forward<Args>(args)...), is_some_{true} {
+        : value_{std::forward<Args>(args)...}, is_some_{true} {
     }
 
     template <typename U = T>
-    constexpr OptionalDestructBase(U&& value) : value_(std::forward<U>(value)), is_some_{true} {
+    constexpr OptionalDestructBase(U&& value) : value_{std::forward<U>(value)}, is_some_{true} {
     }
 
     ~OptionalDestructBase() {
@@ -85,11 +85,11 @@ public:
 
     template <typename... Args>
     constexpr OptionalDestructBase(InPlace, Args&&... args)
-        : value_(std::forward<Args>(args)...), is_some_{true} {
+        : value_{std::forward<Args>(args)...}, is_some_{true} {
     }
 
     template <typename U = T>
-    constexpr OptionalDestructBase(U&& value) : value_(std::forward<U>(value)), is_some_{true} {
+    constexpr OptionalDestructBase(U&& value) : value_{std::forward<U>(value)}, is_some_{true} {
     }
 
 protected:
