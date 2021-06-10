@@ -22,6 +22,7 @@ class OptionalDestructBase;
 
 template <typename T>
 class OptionalDestructBase<T, false> {
+public:
     using value_type = T;
 
     constexpr OptionalDestructBase() noexcept : default_(), is_some_(false) {
@@ -73,6 +74,7 @@ protected:
 
 template <typename T>
 class OptionalDestructBase<T, true> {
+public:
     using value_type = T;
 
     constexpr OptionalDestructBase() noexcept : default_(), is_some_(false) {
@@ -167,7 +169,7 @@ public:
     }
 
     constexpr std::add_pointer_t<value_type> operator->() {
-        return &base::value_;
+        return &(base::value_);
     }
 
     constexpr const value_type& operator*() const& {
