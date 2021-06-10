@@ -26,19 +26,19 @@ class OptionalDestructBase<T, false> {
 public:
     using value_type = T;
 
-    constexpr OptionalDestructBase() noexcept : default_(), is_some_(false) {
+    constexpr OptionalDestructBase() noexcept : default_{}, is_some_{false} {
     }
 
-    constexpr OptionalDestructBase(NullOpt) noexcept : default_(), is_some_(false) {
+    constexpr OptionalDestructBase(NullOpt) noexcept : default_{}, is_some_{false} {
     }
 
     template <typename... Args>
     constexpr OptionalDestructBase(InPlace, Args&&... args)
-        : value_(std::forward<Args>(args)...), is_some_(true) {
+        : value_(std::forward<Args>(args)...), is_some_{true} {
     }
 
     template <typename U = T>
-    constexpr OptionalDestructBase(U&& value) : value_(std::forward<U>(value)), is_some_(true) {
+    constexpr OptionalDestructBase(U&& value) : value_(std::forward<U>(value)), is_some_{true} {
     }
 
     ~OptionalDestructBase() {
@@ -77,19 +77,19 @@ class OptionalDestructBase<T, true> {
 public:
     using value_type = T;
 
-    constexpr OptionalDestructBase() noexcept : default_(), is_some_(false) {
+    constexpr OptionalDestructBase() noexcept : default_{}, is_some_{false} {
     }
 
-    constexpr OptionalDestructBase(NullOpt) noexcept : default_(), is_some_(false) {
+    constexpr OptionalDestructBase(NullOpt) noexcept : default_{}, is_some_{false} {
     }
 
     template <typename... Args>
     constexpr OptionalDestructBase(InPlace, Args&&... args)
-        : value_(std::forward<Args>(args)...), is_some_(true) {
+        : value_(std::forward<Args>(args)...), is_some_{true} {
     }
 
     template <typename U = T>
-    constexpr OptionalDestructBase(U&& value) : value_(std::forward<U>(value)), is_some_(true) {
+    constexpr OptionalDestructBase(U&& value) : value_(std::forward<U>(value)), is_some_{true} {
     }
 
 protected:
