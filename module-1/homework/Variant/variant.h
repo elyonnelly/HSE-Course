@@ -89,9 +89,9 @@ struct TypeAt<TypeList<Head, Tail...>, Index> {
 
 // Find position of type
 
-const static size_t kTypeNotFound {static_cast<size_t>(-1)};
-const static size_t kMoreThanOneMatch {static_cast<size_t>(-2)};
-const static size_t kMoreThanOneConvertible {static_cast<size_t>(-3)};
+const static size_t kTypeNotFound{static_cast<size_t>(-1)};
+const static size_t kMoreThanOneMatch{static_cast<size_t>(-2)};
+const static size_t kMoreThanOneConvertible{static_cast<size_t>(-3)};
 
 constexpr static bool CheckLegalIndex(size_t index) {
     return index != kTypeNotFound && index != kMoreThanOneMatch && index != kMoreThanOneConvertible;
