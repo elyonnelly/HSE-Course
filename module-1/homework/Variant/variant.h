@@ -164,7 +164,8 @@ public:
     template <typename T, int Position = FindExactlyOneType<T, Types...>::kFoundedPosition>
     Variant& operator=(T&& t) noexcept {
         if (CheckLegalIndex(Position)) {
-            SetToUnionList(std::forward<T>(t), kInPlaceIndex<static_cast<size_t>(Position)>, union_list_);
+            SetToUnionList(std::forward<T>(t), kInPlaceIndex<static_cast<size_t>(Position)>,
+                           union_list_);
         }
         return *this;
     }
