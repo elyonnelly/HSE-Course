@@ -162,7 +162,7 @@ public:
     template <typename T, size_t Position = FindExactlyOneType<T, Types...>::foundedPosition>
     Variant& operator=(T&& t) noexcept {
         if (CheckLegalIndex(Position)) {
-            SetToUnionList(std::forward<T>(t), kInPlaceIndex<Position>, unionList_);
+            SetToUnionList(std::forward<T>(t), kInPlaceIndex<Position>, union_list_);
         }
         return *this;
     }
@@ -171,12 +171,12 @@ public:
     friend constexpr auto&& GenericGet(Variant<Types_...>& v);
 
 private:
-    UnionList<0, Types...> unionList_;
+    UnionList<0, Types...> union_list_;
 };
 
 template <typename T, typename... Types>
 constexpr auto&& GenericGet(Variant<Types...>& v) {
-    return GetFromUnionList(std::forward<Variant<Types...>>(v).unionList_,
+    return GetFromUnionList(std::forward<Variant<Types...>>(v).union_list_,
                             InPlaceIndex<FindExactlyOneType<T, Types...>::foundedPosition>());
 }
 
