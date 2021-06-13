@@ -72,7 +72,7 @@ struct TypeList {
     typedef TypeList<Tail...> U;
 };
 
-template <typename TList, unsigned int index>
+template <typename TList, size_t Index>
 struct TypeAt;
 
 template <typename Head, typename... Tail>
@@ -80,9 +80,9 @@ struct TypeAt<TypeList<Head, Tail...>, 0> {
     typedef Head TargetType;
 };
 
-template <typename Head, typename... Tail, unsigned int index>
-struct TypeAt<TypeList<Head, Tail...>, index> {
-    typedef typename TypeAt<TypeList<Tail...>, index - 1>::TargetType TargetType;
+template <typename Head, typename... Tail, size_t Index>
+struct TypeAt<TypeList<Head, Tail...>, Index> {
+    typedef typename TypeAt<TypeList<Tail...>, Index - 1>::TargetType TargetType;
 };
 
 // end of TypeList
@@ -91,20 +91,34 @@ struct TypeAt<TypeList<Head, Tail...>, index> {
 
 const static size_t typeNotFound = -1;
 const static size_t moreThanOneMatch = -2;
+const static size_t moreThanOneConvertible = -2;
+
+constexpr static bool CheckLegalIndex(size_t index) {
+    return index != typeNotFound && index != moreThanOneMatch && index != moreThanOneConvertible;
+}
 
 template <size_t SizeOfFounded>
 constexpr size_t FindPosition(size_t currentPosition, size_t foundedPosition,
-                              const bool (&founded)[SizeOfFounded],
-                              const bool (&convertible)[SizeOfFounded]) {
+                              const bool (&sameType)[SizeOfFounded],
+                              const bool (&convertibleType)[SizeOfFounded]) {
     if (currentPosition == SizeOfFounded) {
         return foundedPosition;
     }
 
-    if (founded[currentPosition] || convertible[currentPosition]) {
-        foundedPosition = foundedPosition == typeNotFound ? currentPosition : moreThanOneMatch;
+    if (sameType[currentPosition] &&
+        (foundedPosition == typeNotFound || foundedPosition == moreThanOneConvertible ||
+         convertibleType[foundedPosition])) {
+        foundedPosition = currentPosition;
+    } else if (sameType[currentPosition] && sameType[foundedPosition]) {
+        foundedPosition = moreThanOneMatch;
+    } else if (foundedPosition == typeNotFound && convertibleType[currentPosition]) {
+        foundedPosition = currentPosition;
+    } else if (convertibleType[currentPosition] && convertibleType[foundedPosition] &&
+               !sameType[foundedPosition]) {
+        foundedPosition = moreThanOneConvertible;
     }
 
-    return FindPosition(currentPosition + 1, foundedPosition, founded, convertible);
+    return FindPosition(currentPosition + 1, foundedPosition, sameType, convertibleType);
 }
 
 template <typename TargetType, typename... Types>
@@ -119,7 +133,7 @@ struct FindExactlyOneChecked {
 
 template <typename T>
 struct FindExactlyOneChecked<T> {
-    static_assert(!std::is_same<T, T>::value && !std::is_convertible<T, T>::value, "Type not in variant");
+    static_assert(!std::is_same<T, T>::value, "Type not in empty type list");
 };
 
 template <typename TargetType, typename... Types>
@@ -147,7 +161,9 @@ public:
 
     template <typename T, size_t Position = FindExactlyOneType<T, Types...>::foundedPosition>
     Variant& operator=(T&& t) noexcept {
-        SetToUnionList(std::forward<T>(t), kInPlaceIndex<Position>, unionList_);
+        if (CheckLegalIndex(Position)) {
+            SetToUnionList(std::forward<T>(t), kInPlaceIndex<Position>, unionList_);
+        }
         return *this;
     }
 
