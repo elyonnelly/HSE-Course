@@ -68,8 +68,8 @@ static constexpr auto&& GetFromUnionList(U&& v, InPlaceIndex<AccessIndex>) {
 
 template <typename Head, typename... Tail>
 struct TypeList {
-    typedef Head T;
-    typedef TypeList<Tail...> U;
+    typedef Head head;
+    typedef TypeList<Tail...> tail;
 };
 
 template <typename TList, size_t Index>
@@ -77,58 +77,58 @@ struct TypeAt;
 
 template <typename Head, typename... Tail>
 struct TypeAt<TypeList<Head, Tail...>, 0> {
-    typedef Head TargetType;
+    typedef Head target_type;
 };
 
 template <typename Head, typename... Tail, size_t Index>
 struct TypeAt<TypeList<Head, Tail...>, Index> {
-    typedef typename TypeAt<TypeList<Tail...>, Index - 1>::TargetType TargetType;
+    typedef typename TypeAt<TypeList<Tail...>, Index - 1>::target_type target_type;
 };
 
 // end of TypeList
 
 // Find position of type
 
-const static size_t typeNotFound = -1;
-const static size_t moreThanOneMatch = -2;
-const static size_t moreThanOneConvertible = -2;
+const static size_t kTypeNotFound = -1;
+const static size_t kMoreThanOneMatch = -2;
+const static size_t kMoreThanOneConvertible = -2;
 
 constexpr static bool CheckLegalIndex(size_t index) {
-    return index != typeNotFound && index != moreThanOneMatch && index != moreThanOneConvertible;
+    return index != kTypeNotFound && index != kMoreThanOneMatch && index != kMoreThanOneConvertible;
 }
 
 template <size_t SizeOfFounded>
-constexpr size_t FindPosition(size_t currentPosition, size_t foundedPosition,
-                              const bool (&sameType)[SizeOfFounded],
-                              const bool (&convertibleType)[SizeOfFounded]) {
-    if (currentPosition == SizeOfFounded) {
-        return foundedPosition;
+constexpr size_t FindPosition(size_t current_position, size_t founded_position,
+                              const bool (&same_type)[SizeOfFounded],
+                              const bool (&convertible_type)[SizeOfFounded]) {
+    if (current_position == SizeOfFounded) {
+        return founded_position;
     }
 
-    if (sameType[currentPosition] &&
-        (foundedPosition == typeNotFound || foundedPosition == moreThanOneConvertible ||
-         convertibleType[foundedPosition])) {
-        foundedPosition = currentPosition;
-    } else if (sameType[currentPosition] && sameType[foundedPosition]) {
-        foundedPosition = moreThanOneMatch;
-    } else if (foundedPosition == typeNotFound && convertibleType[currentPosition]) {
-        foundedPosition = currentPosition;
-    } else if (convertibleType[currentPosition] && convertibleType[foundedPosition] &&
-               !sameType[foundedPosition]) {
-        foundedPosition = moreThanOneConvertible;
+    if (same_type[current_position] &&
+        (founded_position == kTypeNotFound || founded_position == kMoreThanOneConvertible ||
+         convertible_type[founded_position])) {
+        founded_position = current_position;
+    } else if (same_type[current_position] && same_type[founded_position]) {
+        founded_position = kMoreThanOneMatch;
+    } else if (founded_position == kTypeNotFound && convertible_type[current_position]) {
+        founded_position = current_position;
+    } else if (convertible_type[current_position] && convertible_type[founded_position] &&
+               !same_type[founded_position]) {
+        founded_position = kMoreThanOneConvertible;
     }
 
-    return FindPosition(currentPosition + 1, foundedPosition, sameType, convertibleType);
+    return FindPosition(current_position + 1, founded_position, same_type, convertible_type);
 }
 
 template <typename TargetType, typename... Types>
 struct FindExactlyOneChecked {
-    constexpr static bool foundedSameTypes[sizeof...(Types)] = {
+    constexpr static bool kFoundedSameTypes[sizeof...(Types)] = {
         std::is_same<TargetType, Types>::value...};
-    constexpr static bool foundedConvertibleTypes[sizeof...(Types)] = {
+    constexpr static bool kFoundedConvertibleTypes[sizeof...(Types)] = {
         std::is_convertible<TargetType, Types>::value...};
-    constexpr static size_t foundedPosition =
-        FindPosition(0, typeNotFound, foundedSameTypes, foundedConvertibleTypes);
+    constexpr static size_t kFoundedPosition =
+        FindPosition(0, kTypeNotFound, kFoundedSameTypes, kFoundedConvertibleTypes);
 };
 
 template <typename T>
@@ -150,7 +150,7 @@ using variant_alternative_t = typename VariantAlternative<Index, T>::type;
 
 template <size_t Index, typename... Types>
 struct VariantAlternative<Index, Variant<Types...>> {
-    using type = typename TypeAt<TypeList<Types...>, Index>::TargetType;
+    using type = typename TypeAt<TypeList<Types...>, Index>::target_type;
 };
 
 template <typename... Types>
@@ -159,7 +159,7 @@ public:
     constexpr Variant() noexcept {
     }
 
-    template <typename T, size_t Position = FindExactlyOneType<T, Types...>::foundedPosition>
+    template <typename T, size_t Position = FindExactlyOneType<T, Types...>::kFoundedPosition>
     Variant& operator=(T&& t) noexcept {
         if (CheckLegalIndex(Position)) {
             SetToUnionList(std::forward<T>(t), kInPlaceIndex<Position>, union_list_);
@@ -167,8 +167,8 @@ public:
         return *this;
     }
 
-    template <typename T, typename... Types_>
-    friend constexpr auto&& GenericGet(Variant<Types_...>& v);
+    template <typename T, typename... VariantTypes>
+    friend constexpr auto&& GenericGet(Variant<VariantTypes...>& v);
 
 private:
     UnionList<0, Types...> union_list_;
@@ -177,17 +177,17 @@ private:
 template <typename T, typename... Types>
 constexpr auto&& GenericGet(Variant<Types...>& v) {
     return GetFromUnionList(std::forward<Variant<Types...>>(v).union_list_,
-                            InPlaceIndex<FindExactlyOneType<T, Types...>::foundedPosition>());
+                            InPlaceIndex<FindExactlyOneType<T, Types...>::kFoundedPosition>());
 }
 
 template <size_t Index, typename... Types>
 constexpr const variant_alternative_t<Index, Variant<Types...>>& Get(Variant<Types...>& v) {
-    return GenericGet<typename TypeAt<TypeList<Types...>, Index>::TargetType>(v);
+    return GenericGet<typename TypeAt<TypeList<Types...>, Index>::target_type>(v);
 }
 
 template <size_t Index, typename... Types>
 constexpr variant_alternative_t<Index, Variant<Types...>>&& Get(Variant<Types...>&& v) {
-    return GenericGet<typename TypeAt<TypeList<Types...>, Index>::TargetType>(v);
+    return GenericGet<typename TypeAt<TypeList<Types...>, Index>::target_type>(v);
 }
 
 template <typename T, typename... Types>
