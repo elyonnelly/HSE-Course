@@ -199,4 +199,5 @@ template <typename T, typename... Types>
 constexpr T&& Get(Variant<Types...>&& v) {
     return GenericGet<T>(v);
 }
-}
+
+};  // namespace task
