@@ -68,8 +68,8 @@ static constexpr auto&& GetFromUnionList(U&& v, InPlaceIndex<AccessIndex>) {
 
 template <typename Head, typename... Tail>
 struct TypeList {
-    typedef Head head;
-    typedef TypeList<Tail...> tail;
+    using head = Head;
+    using tail = TypeList<Tail...>;
 };
 
 template <typename TList, size_t Index>
@@ -77,21 +77,21 @@ struct TypeAt;
 
 template <typename Head, typename... Tail>
 struct TypeAt<TypeList<Head, Tail...>, 0> {
-    typedef Head target_type;
+    using target_type = Head;
 };
 
 template <typename Head, typename... Tail, size_t Index>
 struct TypeAt<TypeList<Head, Tail...>, Index> {
-    typedef typename TypeAt<TypeList<Tail...>, Index - 1>::target_type target_type;
+    using target_type = typename TypeAt<TypeList<Tail...>, Index - 1>::target_type;
 };
 
 // end of TypeList
 
 // Find position of type
 
-const static size_t kTypeNotFound = -1;
-const static size_t kMoreThanOneMatch = -2;
-const static size_t kMoreThanOneConvertible = -2;
+const static size_t kTypeNotFound {static_cast<size_t>(-1)};
+const static size_t kMoreThanOneMatch {static_cast<size_t>(-2)};
+const static size_t kMoreThanOneConvertible {static_cast<size_t>(-3)};
 
 constexpr static bool CheckLegalIndex(size_t index) {
     return index != kTypeNotFound && index != kMoreThanOneMatch && index != kMoreThanOneConvertible;
