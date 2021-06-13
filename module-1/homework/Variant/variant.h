@@ -4,12 +4,12 @@
 #pragma once
 
 namespace task {
-template <size_t Index>
+template <int Index>
 struct InPlaceIndex {
     explicit InPlaceIndex() = default;
 };
 
-template <size_t Index>
+template <int Index>
 constexpr InPlaceIndex<Index> kInPlaceIndex{};
 
 // UnionList
@@ -41,12 +41,12 @@ public:
 
 // UnionList utilities
 
-template <size_t AssignIndex, typename U, size_t CurrentIndex, typename Head, typename... Tail>
+template <int AssignIndex, typename U, size_t CurrentIndex, typename Head, typename... Tail>
 static void SetToUnionList(U&& value, InPlaceIndex<0>, UnionList<CurrentIndex, Head, Tail...>& u) {
     u.head = value;
 }
 
-template <size_t Index, typename U, size_t CurrentIndex, typename Head, typename... Tail>
+template <int Index, typename U, size_t CurrentIndex, typename Head, typename... Tail>
 static void SetToUnionList(U&& value, InPlaceIndex<Index>,
                            UnionList<CurrentIndex, Head, Tail...>& u) {
     SetToUnionList<Index - 1>(std::forward<U>(value), kInPlaceIndex<Index - 1>, u.tail);
@@ -57,9 +57,11 @@ static constexpr auto&& GetFromUnionList(U&& v, InPlaceIndex<0>) {
     return std::forward<U>(v).head;
 }
 
-template <typename U, std::size_t AccessIndex>
+template <typename U, int AccessIndex>
 static constexpr auto&& GetFromUnionList(U&& v, InPlaceIndex<AccessIndex>) {
-    return GetFromUnionList(std::forward<U>(v).tail, kInPlaceIndex<AccessIndex - 1>);
+    if (AccessIndex >= 0) {
+        return GetFromUnionList(std::forward<U>(v).tail, kInPlaceIndex<AccessIndex - 1>);
+    }
 }
 
 // end of UnionList
@@ -89,18 +91,18 @@ struct TypeAt<TypeList<Head, Tail...>, Index> {
 
 // Find position of type
 
-const static size_t kTypeNotFound{static_cast<size_t>(-1)};
-const static size_t kMoreThanOneMatch{static_cast<size_t>(-2)};
-const static size_t kMoreThanOneConvertible{static_cast<size_t>(-3)};
+const static int16_t kTypeNotFound{-1};
+const static int16_t kMoreThanOneMatch{-2};
+const static int16_t kMoreThanOneConvertible{-3};
 
-constexpr static bool CheckLegalIndex(size_t index) {
+constexpr static bool CheckLegalIndex(int16_t index) {
     return index != kTypeNotFound && index != kMoreThanOneMatch && index != kMoreThanOneConvertible;
 }
 
-template <size_t SizeOfFounded>
-constexpr size_t FindPosition(size_t current_position, size_t founded_position,
-                              const bool (&same_type)[SizeOfFounded],
-                              const bool (&convertible_type)[SizeOfFounded]) {
+template <int SizeOfFounded>
+constexpr int FindPosition(int current_position, int founded_position,
+                           const bool (&same_type)[SizeOfFounded],
+                           const bool (&convertible_type)[SizeOfFounded]) {
     if (current_position == SizeOfFounded) {
         return founded_position;
     }
@@ -127,7 +129,7 @@ struct FindExactlyOneChecked {
         std::is_same<TargetType, Types>::value...};
     constexpr static bool kFoundedConvertibleTypes[sizeof...(Types)] = {
         std::is_convertible<TargetType, Types>::value...};
-    constexpr static size_t kFoundedPosition =
+    constexpr static int kFoundedPosition =
         FindPosition(0, kTypeNotFound, kFoundedSameTypes, kFoundedConvertibleTypes);
 };
 
@@ -159,10 +161,10 @@ public:
     constexpr Variant() noexcept {
     }
 
-    template <typename T, size_t Position = FindExactlyOneType<T, Types...>::kFoundedPosition>
+    template <typename T, int Position = FindExactlyOneType<T, Types...>::kFoundedPosition>
     Variant& operator=(T&& t) noexcept {
         if (CheckLegalIndex(Position)) {
-            SetToUnionList(std::forward<T>(t), kInPlaceIndex<Position>, union_list_);
+            SetToUnionList(std::forward<T>(t), kInPlaceIndex<static_cast<size_t>(Position)>, union_list_);
         }
         return *this;
     }
