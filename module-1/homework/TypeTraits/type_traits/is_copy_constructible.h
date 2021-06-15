@@ -40,22 +40,22 @@ struct IsConstructibleHelper {
     template<typename T, typename A, typename = decltype(static_cast<T>(Declval<A>()))>
     static std::integral_constant<bool, !(IsInvalidLvalueToRvalueCast<T, A>::type::value) &&
                                         !(IsInvalidBaseToDerivedCast<A, T>::type::value)>
-    ReferenceConstructible(int) {};
+    ReferenceConstructible(int);
 
     template<typename T, typename A>
-    static std::false_type ReferenceConstructible(...) {};
+    static std::false_type ReferenceConstructible(...);
 
     template<typename T, typename... Arg, typename = decltype(T(Declval<Arg>()...))>
-    static std::true_type HasNAryConstructor(int) {};
+    static std::true_type HasNAryConstructor(int);
 
     template<typename T, typename... Arg>
-    static std::false_type HasNAryConstructor(...) {};
+    static std::false_type HasNAryConstructor(...);
 
     template<typename T, typename A, typename = decltype(::new T(Declval<A>()))>
-    static std::true_type HasUnaryConstructor(int) {};
+    static std::true_type HasUnaryConstructor(int);
 
     template<typename T, typename A>
-    static std::false_type HasUnaryConstructor(...) {};
+    static std::false_type HasUnaryConstructor(...);
 };
 
 // LibCppIsConstructible - partial specializations
