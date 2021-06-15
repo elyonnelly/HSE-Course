@@ -26,12 +26,12 @@ struct RemoveReference {
 };
 
 template <typename T>
-struct RemoveReference<T &> {
+struct RemoveReference<T&> {
     using type = T;
 };
 
 template <typename T>
-struct RemoveReference<T &&> {
+struct RemoveReference<T&&> {
     using type = T;
 };
 
@@ -53,12 +53,12 @@ using add_const_t = typename AddConst<T>::type;
 
 template <typename T>
 struct AddLvalueReference {
-    using type = T &;
+    using type = T&;
 };
 
 template <typename T>
 struct AddRvalueReference {
-    using type = T &&;
+    using type = T&&;
 };
 
 template <typename T>

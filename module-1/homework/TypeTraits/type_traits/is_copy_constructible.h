@@ -25,7 +25,7 @@ template <typename To, typename From>
 struct IsInvalidLvalueToRvalueCast : std::false_type {};
 
 template <typename RefTo, typename RefFrom>
-struct IsInvalidLvalueToRvalueCast<RefTo &&, RefFrom &> {
+struct IsInvalidLvalueToRvalueCast<RefTo&&, RefFrom&> {
     using from = uncvref_t<RefFrom>;
     using to = uncvref_t<RefTo>;
 
@@ -67,13 +67,13 @@ struct LibCppIsConstructible<T, A> {
 };
 
 template <class T, class A>
-struct LibCppIsConstructible<T &, A> {
-    using type = decltype(IsConstructibleHelper::ReferenceConstructible<T &, A>(0));
+struct LibCppIsConstructible<T&, A> {
+    using type = decltype(IsConstructibleHelper::ReferenceConstructible<T&, A>(0));
 };
 
 template <class T, class A>
-struct LibCppIsConstructible<T &&, A> {
-    using type = decltype(IsConstructibleHelper::ReferenceConstructible<T &&, A>(0));
+struct LibCppIsConstructible<T&&, A> {
+    using type = decltype(IsConstructibleHelper::ReferenceConstructible<T&&, A>(0));
 };
 // LibCppIsConstructible - partial specializations
 
@@ -81,4 +81,4 @@ template <typename T, typename... Args>
 struct IsConstructible : public LibCppIsConstructible<T, Args...>::type {};
 
 template <typename T>
-struct IsCopyConstructible : public LibCppIsConstructible<T, const T &>::type {};
+struct IsCopyConstructible : public LibCppIsConstructible<T, const T&>::type {};

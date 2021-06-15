@@ -28,8 +28,8 @@ using conditional_v = typename Conditional<condition, T, F>::type;
 // MoveIfNoExcept
 template <typename T>
 typename Conditional<!IsNoThrowMoveConstructible<T>::value && IsCopyConstructible<T>::value,
-                     const T &, T &&>::type
-MoveIfNoExcept(T &t) noexcept {
+                     const T&, T&&>::type
+MoveIfNoExcept(T& t) noexcept {
     return std::move(t);
 }
 // MoveIfNoExcept

@@ -37,4 +37,4 @@ struct IsNoThrowConstructible<T[N]>
                                    std::is_object_v<T> || std::is_reference_v<T>, T> {};
 
 template <typename T>
-struct IsNoThrowMoveConstructible : IsNoThrowConstructible<T, T &&> {};
+struct IsNoThrowMoveConstructible : IsNoThrowConstructible<T, T&&> {};
